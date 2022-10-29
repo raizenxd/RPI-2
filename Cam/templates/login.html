@@ -1,0 +1,53 @@
+<head>
+    <meta name="example:title" content="Sign-in form">
+    <meta name="example:description" content="A simple sign-in form for your web application.">
+    <meta name="example:type" content="templates">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple/siimple.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
+    <style>
+        .is-warning {
+            background-color: #ce4040;
+        }
+    </style>
+    <title>Sign-inxxx Example</title>
+</head>
+<body class="has-bg-light">
+    <div class="container has-pt-16 has-pb-16">
+        <div class="has-w-96 has-pl-4 has-pr-4 has-ml-auto has-mr-auto">
+            <div class="card is-shadowed">
+                <h3>Sign in</h3>
+                <form action="/login" method="post">                   
+                <div class="has-mb-4">
+                    <label class="label">Your email</label>
+                    <input type="text"  id="Username" name="username" class="input" placeholder="you@email.com" />
+                </div>
+                <div class="has-mb-6">
+                    <label class="label">Your password</label>
+                    <input type="password" class="input" placeholder="Password"   id="Password" name="password"/>
+                </div>
+                <button type="submit" class="button is-full">
+                    <i class="si-lock has-pr-1"></i>
+                    <span>Sign in</span>
+                </button>
+                </form>
+            </div>
+              <!-- if msg null and True -->
+              {% if msg %}
+            <div class="alert is-warning has-mt-6">
+              
+                <div>
+                    Not Authenticated 
+                </div>    
+            </div>
+            {% endif %}
+            <div class="has-mt-6" align="center">
+                <a href="#" class="is-not-underlined has-text-current has-text-primary-hover">
+                    <strong>Forgot your password?</strong>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
