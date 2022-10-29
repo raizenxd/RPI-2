@@ -129,7 +129,7 @@ def check_for_objects():
             print ("Error sending email: ", sys.exc_info()[0])
 
 @app.route('/')
-@basic_auth.required
+
 def index():
     email = getTheEmail()[2]
     name = getTheEmail()[1]

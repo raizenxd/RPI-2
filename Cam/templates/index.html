@@ -1,33 +1,52 @@
 <html>
   <head>
     <title>Raspberry Pi Surveillance Camera</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple/siimple.css" />
+    <style>
+      body{
+       margin: 0;
+        padding: 0;
+      }
+    </style>
   </head>
   <body>
     <h1>Raspberry Pi Surveillance Camera</h1>
     <br>
-    <div>
-     <h2>Name: {{name}}</h2>
-     <h2>Email Sent: {{ emailsend }}</h2>
+   
+
+    <div class="columns">
+      <div class="column">
+        <div>
+          <h2 class="mt-5">CAMERA APP CONTROL</h2>
+          <div>Name: {{name}} </div>
+         <div> Email Sent: {{ emailsend }}</div>
+          <button class="button">Primary button</button>
+         </div>
+         <img id="bg" src="{{ url_for('video_feed') }}" width="360" height="240">
+         <br><br><br>
+        
+      </div>
+  
+      <div class="column">
+        <form method="post" action="{{ url_for('tasks') }}">         
+          </form>
+              <form action = "{{ url_for('savedb') }}" method = "POST">
+                   <h3>Client Information</h3>
+                   <label class="label">Name:</label>
+                   <input class="input" type = "text" name = "name" value={{name}} /></br>   
+                   
+                   <label class="label">Emal:</label>
+                   <input  class="input" type = "email" name = "email" value= {{ emailsend }} /><br>
+                    <input type = "submit" value = "submit" /><br>
+                   
+              </form>
+      </div>
     </div>
-    <img id="bg" src="{{ url_for('video_feed') }}" width="1080" height="720">
-    <br><br><br>
-    <h2 class="mt-5">CAMERA APP CONTROL</h2>
-<form method="post" action="{{ url_for('tasks') }}">
-<input type="submit" value="Start/Stop Recording" name="rec" />
-</form>
-    <form action = "{{ url_for('savedb') }}" method = "POST">
-         <h3>Client Information</h3>
-         Full Name:<br>
-         <input type = "text" name = "name" value={{name}} /></br>         
-         
-         Email:<br>
-         <input type = "email" name = "email" value= {{ emailsend }} /><br>
-          <input type = "submit" value = "submit" /><br>
-         
-      </form>
+    <!-- BREAK -->
+    
+
       
-      
-      
+  
    </body>
   </body>
 </html>
