@@ -3,13 +3,14 @@ import sys
 from mail import sendEmail
 from flask import Flask, render_template, Response, request
 from camera import VideoCamera
-from flask_basicauth import BasicAuth
 import time
 import threading
 import sqlite3
 import os
 import datetime, time
 from threading import Thread
+from django.shortcuts import render
+from flask import Flask, redirect, url_for, render_template, request, session
 
 email_update_interval = 50 
 video_camera = VideoCamera()
@@ -18,11 +19,6 @@ object_classifier = cv2.CascadeClassifier("models/upperbody_recognition_model.xm
 
 
 app = Flask(__name__)
-app.config['BASIC_AUTH_USERNAME'] = 'user'
-app.config['BASIC_AUTH_PASSWORD'] = 'pass'
-app.config['BASIC_AUTH_FORCE'] = True
-
-basic_auth = BasicAuth(app)
 last_sent = 0
 
 try:
@@ -38,13 +34,29 @@ face=0
 switch=1
 rec=0
 
+def register_user_to_db(username, password):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute('INSERT INTO users(username,password) values (?,?)', (username, password))
+    con.commit()
+    con.close()
 
-conn = sqlite3.connect('database.db')
-print("Opened database successfully");
 
-conn.execute("CREATE TABLE IF NOT EXISTS usercon (id INT, name TEXT, email TEXT);")
-print("Table created successfully")
-conn.close()
+def check_user(username, password):
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
+    cur.execute('Select username,password FROM users WHERE username=? and password=?', (username, password))
+
+    result = cur.fetchone()
+    if result:
+        return True
+    else:
+        return False
+
+
+app = Flask(__name__)
+app.secret_key = "r@nd0mSk_1"
+
 
 @app.route('/savedb',methods = ['POST', 'GET'])
 def savedb():
@@ -66,6 +78,8 @@ def savedb():
       finally:
          con.close()
          return render_template("result.html",msg = msg)         
+ 
+
          
 def getTheEmail():
     con = sqlite3.connect('database.db')
@@ -83,6 +97,7 @@ def record(out):
     while(rec):
         time.sleep(0.05)
         out.write(rec_frame)
+
 @app.route('/requests',methods=['POST','GET'])
 def tasks():
     global switch,camera
@@ -127,13 +142,66 @@ def check_for_objects():
                 
         except:
             print ("Error sending email: ", sys.exc_info()[0])
+# Deprecation For the meantime
+# @app.route('/')
+# def index():
+#     email = getTheEmail()[2]
+#     name = getTheEmail()[1]
+#     return render_template('index.html', emailsend=email, name=name)
 
-@app.route('/')
-
+# initial page
+@app.route("/")
 def index():
-    email = getTheEmail()[2]
-    name = getTheEmail()[1]
-    return render_template('index.html', emailsend=email, name=name)
+    if 'username' in session:
+        return redirect(url_for('home'))
+    return render_template('login.html')
+
+# register page
+@app.route('/register', methods=["POST", "GET"])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        register_user_to_db(username, password)
+        return redirect(url_for('index'))
+    elif 'username' in session:
+        return redirect(url_for('home'))
+    else:
+        return render_template('register.html')
+# login page
+@app.route('/login', methods=["POST", "GET"])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        print(check_user(username, password))
+        
+        if check_user(username, password):
+            session['username'] = username
+        return redirect(url_for('home' ))
+    # if user is already logged in
+    elif 'username' in session:
+        return redirect(url_for('home'))
+    else:
+        # check if username is null or password is null
+        if(request.form['username'] == "" or request.form['password'] == ""):
+            return render_template('login.html', msg="Please enter username and password")
+        else:
+            return render_template('login.html', msg="Not register in database")
+
+
+@app.route('/home', methods=['POST', "GET"])
+def home():
+    if 'username' in session:
+       return render_template('index.html', emailsend="email", name="username")
+    else:
+        return render_template('login.html', msg=True) 
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 def gen(camera, camv2s):
     global rec_frame
