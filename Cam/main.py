@@ -1,7 +1,7 @@
 import cv2
 import sys
 from mail import sendEmail
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, flash
 from camera import VideoCamera
 import time
 import threading
@@ -35,15 +35,15 @@ switch=1
 rec=0
 
 def register_user_to_db(username, password):
-    con = sqlite3.connect('database.db')
+    con = sqlite3.connect('db_web.db')
     cur = con.cursor()
-    cur.execute('INSERT INTO users(username,password) values (?,?)', (username, password))
+    cur.execute('INSERT INTO users(username,password,email,name) values (?,?)', (username, password))
     con.commit()
     con.close()
 
 
 def check_user(username, password):
-    con = sqlite3.connect('database.db')
+    con = sqlite3.connect('db_web.db')
     cur = con.cursor()
     cur.execute('Select username,password FROM users WHERE username=? and password=?', (username, password))
 
@@ -66,7 +66,7 @@ def savedb():
          name = request.form['name']
          email = request.form['email']        
          
-         with sqlite3.connect("database.db") as con:
+         with sqlite3.connect("db_web.db") as con:
             cur = con.cursor()
             cur.execute("UPDATE usercon SET name=?, email=? WHERE id=1",(name,email))            
             con.commit()
@@ -82,7 +82,7 @@ def savedb():
 
          
 def getTheEmail():
-    con = sqlite3.connect('database.db')
+    con = sqlite3.connect('db_web.db')
     cursor = con.cursor()
     print("Opened database successfully")
     select_query = "SELECT * FROM usercon WHERE id=1"
@@ -178,7 +178,11 @@ def login():
         
         if check_user(username, password):
             session['username'] = username
-        return redirect(url_for('home' ))
+            # if username is admin add session admin
+            if username == 'admin':
+                session['admin'] = True
+            return redirect(url_for('home'))
+        return redirect(url_for('home'))
     # if user is already logged in
     elif 'username' in session:
         return redirect(url_for('home'))
@@ -192,8 +196,10 @@ def login():
 
 @app.route('/home', methods=['POST', "GET"])
 def home():
-    if 'username' in session:
-       return render_template('index.html', emailsend="email", name="username")
+    if 'admin' in session:
+       return render_template('index.html', admin=True)
+    elif 'username' in session:
+        return render_template('index.html', admin=False)
     else:
         return render_template('login.html', msg=True) 
 
@@ -218,6 +224,72 @@ def video_feed():
     print("Starting")
     return Response(gen(video_camera, camera_cv2),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route("/users")
+def users():
+    if 'admin' in session:
+        con=sqlite3.connect("db_web.db")
+        con.row_factory=sqlite3.Row
+        cur=con.cursor()
+        cur.execute("select * from users")
+        data=cur.fetchall()
+        return render_template("users.html",datas=data)
+    else:
+        return redirect(url_for('index'))
+
+@app.route("/add_user",methods=['POST','GET'])
+def add_user():
+    if 'admin' in session:
+        if request.method=='POST':
+            username=request.form['username']
+            password=request.form['password']
+            con=sqlite3.connect("db_web.db")
+            cur=con.cursor()
+            cur.execute("insert into users(username,password) values (?,?)",(username,password))
+            con.commit()
+            flash('User Added','success')
+            return redirect(url_for("users"))
+        return render_template("add_user.html")
+    else:
+        return redirect(url_for('index'))
+
+@app.route("/edit_user/<string:uid>",methods=['POST','GET'])
+def edit_user(uid):
+    if 'admin' in session:
+        if request.method=='POST':
+            username=request.form['username']
+            password=request.form['password']
+            con=sqlite3.connect("db_web.db")
+            cur=con.cursor()
+            cur.execute("update users set username=?,password=? where UID=?",(username,password,uid))
+            con.commit()
+            flash('User Updated','success')
+            return redirect(url_for("users"))
+        con=sqlite3.connect("db_web.db")
+        con.row_factory=sqlite3.Row
+        cur=con.cursor()
+        cur.execute("select * from users where UID=?",(uid,))
+        data=cur.fetchone()
+        return render_template("edit_user.html",datas=data)
+    else:
+        return redirect(url_for('index'))
+    
+@app.route("/delete_user/<string:uid>",methods=['GET'])
+def delete_user(uid):
+    if 'admin' in session:
+        con=sqlite3.connect("db_web.db")
+        cur=con.cursor()
+        cur.execute("delete from users where UID=?",(uid,))
+        con.commit()
+        flash('User Deleted','warning')
+        return redirect(url_for("users"))
+    else:
+        return redirect(url_for('index'))
+    
+if __name__=='__main__':
+    app.secret_key='admin123'
+    app.run(debug=True)
 
 if __name__ == '__main__':
     t = threading.Thread(target=check_for_objects, args=())
