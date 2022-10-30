@@ -23,7 +23,7 @@
               <!-- Navbar brand: always visible -->
               <a class="is-flex has-items-center has-mr-6-tablet has-mr-auto-mobile has-size-2 has-text-current">
                   <i class="si-mug has-size-4 has-mr-2"></i>
-                  <strong>Nadffdfvbar</strong>
+                  <strong>RPI</strong>
               </a>
               <!-- Toggler button: only visible in mobile screens -->
               <div id="navbar-toggler" class="menu  is-hidden-tablet"></div>
@@ -31,18 +31,20 @@
               <div id="navbar-menu" class="is-flex-tablet has-justify-between has-w-full has-mt-4-mobile">
                   <!-- Left side links -->
                   <div class="is-flex-tablet">
-                      <a class="navlink has-mb-2-mobile has-mr-2-tablet" href="/users">Users</a>
+                      <!-- if admin show link-->
+                      {% if admin %}
+                      <a href="{{ url_for('add_user') }}" class="navlink has-mb-2-mobile">Add User</a>
+                      {% endif %}
                       <a class="navlink has-mb-2-mobile">Link 2</a>
                   </div>
                   <!-- Right side conttent -->
                   <div class="has-ml-auto-tablet has-mt-4-mobile">
-                      <a class="navlink has-mb-2-mobile">
+                      <a href="{{ url_for('logout') }}" class="navlink has-mb-2-mobile">
                         <i class="si-logout has-size-4 has-mr-2"></i>Logout</a>
                   </div>
               </div>
           </div>
     
-
 
 
    <div class="container">

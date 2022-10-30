@@ -178,7 +178,11 @@ def login():
         
         if check_user(username, password):
             session['username'] = username
-        return redirect(url_for('home' ))
+            # if username is admin add session admin
+            if username == 'admin':
+                session['admin'] = True
+            return redirect(url_for('home'))
+        return redirect(url_for('home'))
     # if user is already logged in
     elif 'username' in session:
         return redirect(url_for('home'))
@@ -192,8 +196,10 @@ def login():
 
 @app.route('/home', methods=['POST', "GET"])
 def home():
-    if 'username' in session:
-       return render_template('index.html')
+    if 'admin' in session:
+       return render_template('index.html', admin=True)
+    elif 'username' in session:
+        return render_template('index.html', admin=False)
     else:
         return render_template('login.html', msg=True) 
 
@@ -222,7 +228,7 @@ def video_feed():
 
 @app.route("/users")
 def users():
-    if 'username' in session:
+    if 'admin' in session:
         con=sqlite3.connect("db_web.db")
         con.row_factory=sqlite3.Row
         cur=con.cursor()
@@ -234,7 +240,7 @@ def users():
 
 @app.route("/add_user",methods=['POST','GET'])
 def add_user():
-    if 'username' in session:
+    if 'admin' in session:
         if request.method=='POST':
             username=request.form['username']
             password=request.form['password']
@@ -250,7 +256,7 @@ def add_user():
 
 @app.route("/edit_user/<string:uid>",methods=['POST','GET'])
 def edit_user(uid):
-    if 'username' in session:
+    if 'admin' in session:
         if request.method=='POST':
             username=request.form['username']
             password=request.form['password']
@@ -271,7 +277,7 @@ def edit_user(uid):
     
 @app.route("/delete_user/<string:uid>",methods=['GET'])
 def delete_user(uid):
-    if 'username' in session:
+    if 'admin' in session:
         con=sqlite3.connect("db_web.db")
         cur=con.cursor()
         cur.execute("delete from users where UID=?",(uid,))
