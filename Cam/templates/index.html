@@ -2,54 +2,56 @@
   <head>
     <title>Raspberry Pi Surveillance Camera</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple/siimple.css" />
+    <meta name="example:title" content="Raspberry">
+    <meta name="example:description" content="RPI">
+    <meta name="example:type" content="sections">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
     <style>
-      body{
-       margin: 0;
-        padding: 0;
-      }
+     
     </style>
   </head>
   <body>
-    <h1>DDDRaspberry Pi Surveillance Camera</h1>
-    <br>
-   
-    <div class="container has-pt-8 has-pb-24">
-
-    <div class="columns">
-      <div class="column">
-        <div>
-          <h2 class="mt-5">CAMERA APP CONTROL</h2>
-        <div>Name: {{name}} </div>
-         <div> Email Sent: {{ emailsend }}</div>
-          <button class="button">Primary button</button>
-         </div>
-         <img id="bg" src="{{ url_for('video_feed') }}" width="360" height="240">
-         <br><br><br>
-        
-      </div>
-  
-      <div class="column">
-        <form method="post" action="{{ url_for('tasks') }}">         
-          </form>
-              <form action = "{{ url_for('savedb') }}" method = "POST">
-                   <h3>Client Information</h3>
-                   <label class="label">Name:</label>
-                   <input class="input" type = "text" name = "name" value={{name}} /></br>   
-                   
-                   <label class="label">Emal:</label>
-                   <input  class="input" type = "email" name = "email" value= {{ emailsend }} /><br>
-                    <input type = "submit" value = "submit" /><br>
-                   
-              </form>
-        
-      </div>
-    </div>
-    <!-- BREAK -->
     
 
-      </div>
+      <!-- Dark navbar with action button on right -->
+      
+        
+          <div class="container has-pt-4 has-pb-4 has-pl-6 has-pr-6 is-flex has-items-center has-flex-wrap-mobile is-rounded">
+              <!-- Navbar brand: always visible -->
+              <a class="is-flex has-items-center has-mr-6-tablet has-mr-auto-mobile has-size-2 has-text-current">
+                  <i class="si-mug has-size-4 has-mr-2"></i>
+                  <strong>Nadffdfvbar</strong>
+              </a>
+              <!-- Toggler button: only visible in mobile screens -->
+              <div id="navbar-toggler" class="menu  is-hidden-tablet"></div>
+              <!-- Navigation menu: by default hidden on mobile screens -->
+              <div id="navbar-menu" class="is-flex-tablet has-justify-between has-w-full has-mt-4-mobile">
+                  <!-- Left side links -->
+                  <div class="is-flex-tablet">
+                      <a class="navlink has-mb-2-mobile has-mr-2-tablet" href="/users">Users</a>
+                      <a class="navlink has-mb-2-mobile">Link 2</a>
+                  </div>
+                  <!-- Right side conttent -->
+                  <div class="has-ml-auto-tablet has-mt-4-mobile">
+                      <a class="navlink has-mb-2-mobile">
+                        <i class="si-logout has-size-4 has-mr-2"></i>Logout</a>
+                  </div>
+              </div>
+          </div>
+    
 
+
+
+   <div class="container">
+      <div>
+        <img id="bg" src="{{ url_for('video_feed') }}" width="90%" height="20%">
+      </div>
+     
+   </div>
   
-   </body>
+ 
   </body>
 </html>

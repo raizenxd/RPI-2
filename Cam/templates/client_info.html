@@ -1,0 +1,15 @@
+<div class="column">
+    <form method="post" action="{{ url_for('tasks') }}">         
+      </form>
+          <form action = "{{ url_for('savedb') }}" method = "POST">
+               <h3>Client Information</h3>
+               <label class="label">Name:</label>
+               <input class="input" type = "text" name = "name" value={{name}} /></br>   
+               
+               <label class="label">Emal:</label>
+               <input  class="input" type = "email" name = "email" value= {{ emailsend }} /><br>
+                <input type = "submit" value = "submit" /><br>
+               
+          </form>
+    
+  </div>
