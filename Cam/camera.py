@@ -1,7 +1,4 @@
 import cv2
-# for the windows
-# from imutils.video.webcamvideostream import WebcamVideoStream
-# for raspberry pi
 from imutils.video.pivideostream import PiVideoStream
 import imutils
 import time
@@ -9,9 +6,6 @@ import numpy as np
 
 class VideoCamera(object):
     def __init__(self):
-        # for the windows
-        # self.vs = WebcamVideoStream(src=0).start()
-        # for the raspberry pi
         self.vs = PiVideoStream().start()
         time.sleep(2.0)
 
@@ -44,5 +38,6 @@ class VideoCamera(object):
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         return (jpeg.tobytes(), found_objects)
+
 
 
