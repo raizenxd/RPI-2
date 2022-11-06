@@ -45,13 +45,15 @@ def register_user_to_db(username, password):
 def check_user(username, password):
     con = sqlite3.connect('db_web.db')
     cur = con.cursor()
-    cur.execute('Select username,password FROM users WHERE username=? and password=?', (username, password))
+    
+    cur.execute('Select username,password, uid FROM users WHERE username=? and password=?', (username, password))
 
     result = cur.fetchone()
-    if result:
-        return True
+    
+    if result:        
+        return (True,result[2])
     else:
-        return False
+        return (False,0)
 
 
 app = Flask(__name__)
@@ -176,7 +178,9 @@ def login():
         password = request.form['password']
         print(check_user(username, password))
         
-        if check_user(username, password):
+        if check_user(username, password)[0]:
+            # session the userID
+            session['userid'] = check_user(username, password)[1]
             session['username'] = username
             # if username is admin add session admin
             if username == 'admin':
@@ -199,7 +203,7 @@ def home():
     if 'admin' in session:
        return render_template('index.html', admin=True)
     elif 'username' in session:
-        return render_template('index.html', admin=False, username=session['username'])
+        return render_template('index.html', admin=False, username=session['username'], userid=session['userid'])
     else:
         return render_template('login.html', msg=True) 
 
@@ -248,10 +252,20 @@ def add_user():
             name=request.form['name']
             con=sqlite3.connect("db_web.db")
             cur=con.cursor()
-            cur.execute("insert into users (username,password,email,name) values (?,?,?,?)",(username,password,email,name))
-            con.commit()
-            flash('User Added','success')
-            return redirect(url_for("users"))
+            # if username is not in database, add it
+            cur.execute("SELECT * FROM users WHERE username = ?", (username,))
+            if cur.fetchone() is None:
+                cur.execute("insert into users (username,password,email,name) values(?,?,?,?)",(username,password,email,name))
+                con.commit()
+                con.commit()
+                con.close()                
+                flash('User Added','success')
+                return redirect(url_for("users"))
+                
+            else:
+                flash("Username already exist")
+                return render_template("add_user.html")
+            
         return render_template("add_user.html")
     else:
         return redirect(url_for('index'))
@@ -264,13 +278,20 @@ def edit_user(uid):
             password=request.form['password']
             email=request.form['email']
             name=request.form['name']
-
             con=sqlite3.connect("db_web.db")
             cur=con.cursor()
-            cur.execute("update users set username=?,password=?,email=?,name=? where uid=?",(username,password,email,name,uid))
-            con.commit()
-            flash('User Updated','success')
-            return redirect(url_for("users"))
+            # check if username is already in database
+            cur.execute("select * from users where username=?",(username,))
+            data=cur.fetchall()
+            if len(data) > 0:
+                flash('Username already in database','danger')
+                return redirect(url_for("users"))
+            else:
+                cur.execute("update users set username=?,password=?,email=?,name=? where id=?",(username,password,email,name,uid))
+                con.commit()
+                flash('User Updated','success')
+                return redirect(url_for("users"))
+            
         con=sqlite3.connect("db_web.db")
         con.row_factory=sqlite3.Row
         cur=con.cursor()
@@ -279,6 +300,7 @@ def edit_user(uid):
         return render_template("edit_user.html",datas=data)
     else:
         return redirect(url_for('index'))
+
     
 @app.route("/delete_user/<string:uid>",methods=['GET'])
 def delete_user(uid):
@@ -291,7 +313,37 @@ def delete_user(uid):
         return redirect(url_for("users"))
     else:
         return redirect(url_for('index'))
+
+@app.route("/edit_settings",methods=['POST','GET'])
+def edit_settings():    
+    if request.method=='POST':
+        username=request.form['username']
+        password=request.form['password']
+        email=request.form['email']
+        name=request.form['name']
+        con=sqlite3.connect("db_web.db")
+        cur=con.cursor()
+        # get the user id from session
+        
+        # check if usrname is already in database
+        cur.execute("select * from users where username=?",(username,))
+        data=cur.fetchone()
+        if data is not None:
+            flash('Username already in database','warning')
+            return redirect(url_for("edit_settings"))
+        cur.execute("update users set username=?,password=?,email=?,name=? where uid=?",(username,password,email,name,session['userid']))
+
+        con.commit()
+        flash('User Updated','success')
+        return redirect(url_for("users"))
+    con=sqlite3.connect("db_web.db")
+    con.row_factory=sqlite3.Row
+    cur=con.cursor()
+    cur.execute("select * from users where UID=?",(session['userid'],))
+    data=cur.fetchone()
+    return render_template("edit_settings.html",datas=data)
     
+           
 
 if __name__ == '__main__':
     t = threading.Thread(target=check_for_objects, args=())
