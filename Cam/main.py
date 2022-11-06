@@ -287,12 +287,10 @@ def delete_user(uid):
     else:
         return redirect(url_for('index'))
     
-if __name__=='__main__':
-    app.secret_key='admin123'
-    app.run(debug=True)
 
 if __name__ == '__main__':
     t = threading.Thread(target=check_for_objects, args=())
     t.daemon = True
     t.start()
+    app.secret_key='admin123'
     app.run(host='0.0.0.0', debug=False)
