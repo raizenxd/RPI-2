@@ -4,12 +4,12 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import sqlite3
 
-fromEmail = 'cortezpatrickian@gmail.com'
+fromEmail = 'sekyuisme27@gmail.com'
 
-fromEmailPassword = 'jppxngxlkaklxtnp'
+fromEmailPassword = 'gwlstadxritinfiq'
 
 
-toEmail = 'sekyuisme27@gmail.com'
+toEmail = 'raizensangalang.tech@gmail.com'
 
 def getEmailSave():
     return "dsds"
@@ -29,12 +29,12 @@ def sendEmail(image):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = 'Person Detected'
     msgRoot['From'] = fromEmail
-    msgRoot['To'] = getTheEmail()[2]
-    print(getTheEmail()[2])
-    #xtx = mail.getTheEmail()[1]
-    #print(xtx)
-    print("SDKSKDKSKDKSKD")
-
+    # msgRoot['To'] = getTheEmail()[2]
+    # print(getTheEmail()[2])
+    # #xtx = mail.getTheEmail()[1]
+    # #print(xtx)
+    # print("SDKSKDKSKDKSKD")
+    msgRoot['To'] = toEmail
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
     msgText = MIMEText('motion detected')

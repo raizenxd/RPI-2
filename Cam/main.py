@@ -1,7 +1,7 @@
 import cv2
 import sys
 from mail import sendEmail
-from flask import Flask, render_template, Response, request, flash
+from flask import Flask, render_template, Response, request, flash, redirect, jsonify
 from camera import VideoCamera
 import time
 import threading
@@ -11,6 +11,8 @@ import datetime, time
 from threading import Thread
 from django.shortcuts import render
 from flask import Flask, redirect, url_for, render_template, request, session
+# import cam 
+import camera as camx2
 
 email_update_interval = 50 
 video_camera = VideoCamera()
@@ -343,7 +345,28 @@ def edit_settings():
     data=cur.fetchone()
     return render_template("edit_settings.html",datas=data)
     
-           
+############### VIDEO RECORDER ###################
+video_camera_record = None
+global_framex_c = None
+@app.route('/record_status', methods=['POST'])
+def record_status():
+    global video_camera_record 
+    if video_camera_record == None:
+        video_camera_record = camx2.VideoCamera()
+
+    json = request.get_json()
+
+    status = json['status']
+
+    if status == "true":
+        video_camera_record.start_record()
+        return jsonify(result="started")
+    else:
+        video_camera_record.stop_record()
+        return jsonify(result="stopped")
+
+
+############## MAIN #############################
 
 if __name__ == '__main__':
     t = threading.Thread(target=check_for_objects, args=())
