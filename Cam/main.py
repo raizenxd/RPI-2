@@ -199,7 +199,7 @@ def home():
     if 'admin' in session:
        return render_template('index.html', admin=True)
     elif 'username' in session:
-        return render_template('index.html', admin=False)
+        return render_template('index.html', admin=False, username=session['username'])
     else:
         return render_template('login.html', msg=True) 
 
@@ -244,9 +244,11 @@ def add_user():
         if request.method=='POST':
             username=request.form['username']
             password=request.form['password']
+            email=request.form['email']
+            name=request.form['name']
             con=sqlite3.connect("db_web.db")
             cur=con.cursor()
-            cur.execute("insert into users(username,password) values (?,?)",(username,password))
+            cur.execute("insert into users (username,password,email,name) values (?,?,?,?)",(username,password,email,name))
             con.commit()
             flash('User Added','success')
             return redirect(url_for("users"))
@@ -260,9 +262,12 @@ def edit_user(uid):
         if request.method=='POST':
             username=request.form['username']
             password=request.form['password']
+            email=request.form['email']
+            name=request.form['name']
+
             con=sqlite3.connect("db_web.db")
             cur=con.cursor()
-            cur.execute("update users set username=?,password=? where UID=?",(username,password,uid))
+            cur.execute("update users set username=?,password=?,email=?,name=? where uid=?",(username,password,email,name,uid))
             con.commit()
             flash('User Updated','success')
             return redirect(url_for("users"))
