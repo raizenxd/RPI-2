@@ -9,8 +9,15 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
+    
     <style>
-     
+     .btn-danger{
+      background-color: #ff0000;
+      color: #fff;
+     }
+     *{
+      font-family: 'Roboto', sans-serif;
+     }
     </style>
   </head>
   <body>
@@ -32,10 +39,15 @@
                   <!-- Left side links -->
                   <div class="is-flex-tablet">
                       <!-- if admin show link-->
+                      <a class="navlink has-mb-2-mobile" href="{{url_for('home')}}">Home</a>
                       {% if admin %}
                       <a href="{{ url_for('add_user') }}" class="navlink has-mb-2-mobile">Add User</a>
+                      
+                      <!-- show all users in this link-->
+                      <a href="{{ url_for('users') }}" class="navlink has-mb-2-mobile">Users</a>
                       {% endif %}
-                      <a class="navlink has-mb-2-mobile">Link 2</a>
+                      <!-- go to edit settings and fetch userid-->
+                      <a href="{{ url_for('edit_settings') }}" class="navlink has-mb-2-mobile">Settings</a>
                   </div>
                   <!-- Right side conttent -->
                   <div class="has-ml-auto-tablet has-mt-4-mobile">
@@ -48,6 +60,10 @@
 
 
    <div class="container">
+      <!-- greet the user-->
+      <div class="greet-user">
+        <h1 class="has-text-centered">Hello {{ username }}!</h1>
+      </div>
       <div>
         <img id="bg" src="{{ url_for('video_feed') }}" width="90%" height="20%">
       </div>
