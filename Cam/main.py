@@ -355,12 +355,17 @@ class RecordingThread (threading.Thread):
 
         self.cap = camera
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        # print if the recording is started
+        print("Recording started")
+        print(f"TEST LINE 360: {fourcc}")
         self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
 
     def run(self):
         while self.isRunning:
             ret, frame = self.cap.read()
             if ret:
+                print("Writing frame")
+                print(f"TEST LINE 368: {frame} {ret}")
                 self.out.write(frame)
 
         self.out.release()
@@ -413,13 +418,16 @@ class VideoCameraX(object):
 
     def start_record(self):
         self.is_record = True
+        print("Recording started")
         self.recordingThread = RecordingThread("Video Recording Thread", self.cap)
+        print("Recording thread started")
+        print(f"TEST LINE 420: {self.recordingThread}")
         self.recordingThread.start()
 
     def stop_record(self):
         self.is_record = False
-
-        if self.recordingThread != None:
+        print("Recording stopped")
+        if self.recordingThread != None:            
             self.recordingThread.stop()
 
             
@@ -433,6 +441,7 @@ def indexcam():
 
 @app.route('/record_status', methods=['POST'])
 def record_status():
+    print("record_status")
     global video_camera_record 
     if video_camera_record == None:
         video_camera_record = VideoCameraX()
@@ -457,12 +466,16 @@ def video_stream():
         
     while True:
         frame = video_camera_record.get_frame()
-
+        print(f"TEST LINE 465: {frame}")
         if frame != None:
             global_framex_c = frame
+            print(f"TEST LINE 460: {frame}")
+            print("TEST LINE 461: ", global_framex_c)
             yield (b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
         else:
+            print("TEST LINE 473: ", global_framex_c)
+            print("TEST LINE 474: ", frame)
             yield (b'--frame\r\n'
                             b'Content-Type: image/jpeg\r\n\r\n' + global_framex_c + b'\r\n\r\n')
 
