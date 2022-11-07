@@ -1,14 +1,14 @@
 import cv2
-# from imutils.video.pivideostream import PiVideoStream
-from imutils.video.webcamvideostream import WebcamVideoStream
+from imutils.video.pivideostream import PiVideoStream
+#from imutils.video.webcamvideostream import WebcamVideoStream
 import imutils
 import time
 import numpy as np
 
 class VideoCamera(object):
     def __init__(self):
-        # self.vs = PiVideoStream().start()
-        self.vs = WebcamVideoStream(src=0).start()
+        self.vs = PiVideoStream().start()
+        #self.vs = WebcamVideoStream(src=0).start()
         time.sleep(2.0)
 
     def __del__(self):
@@ -40,6 +40,7 @@ class VideoCamera(object):
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         return (jpeg.tobytes(), found_objects)
+
 
 
 

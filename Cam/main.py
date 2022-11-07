@@ -12,7 +12,6 @@ from threading import Thread
 from django.shortcuts import render
 from flask import Flask, redirect, url_for, render_template, request, session
 # import cam 
-import camera as camx2
 
 email_update_interval = 50 
 video_camera = VideoCamera()
@@ -344,19 +343,99 @@ def edit_settings():
     cur.execute("select * from users where UID=?",(session['userid'],))
     data=cur.fetchone()
     return render_template("edit_settings.html",datas=data)
+########## CAMERAAAAA RECORDER ###################
+
+import threading
+
+class RecordingThread (threading.Thread):
+    def __init__(self, name, camera):
+        threading.Thread.__init__(self)
+        self.name = name
+        self.isRunning = True
+
+        self.cap = camera
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
+
+    def run(self):
+        while self.isRunning:
+            ret, frame = self.cap.read()
+            if ret:
+                self.out.write(frame)
+
+        self.out.release()
+
+    def stop(self):
+        self.isRunning = False
+
+    def __del__(self):
+        self.out.release()
+
+class VideoCameraX(object):
+    def __init__(self):
+        # Open a camera
+        self.cap = camera_cv2
+      
+        # Initialize video recording environment
+        self.is_record = False
+        self.out = None
+
+        # Thread for recording
+        self.recordingThread = None
+    
+    def __del__(self):
+        self.cap.release()
+    
+    def get_frame(self):
+        ret, frame = self.cap.read()
+
+        if ret:
+            ret, jpeg = cv2.imencode('.jpg', frame)
+
+            # Record video
+            # if self.is_record:
+            #     if self.out == None:
+            #         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+            #         self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
+                
+            #     ret, frame = self.cap.read()
+            #     if ret:
+            #         self.out.write(frame)
+            # else:
+            #     if self.out != None:
+            #         self.out.release()
+            #         self.out = None  
+
+            return jpeg.tobytes()
+      
+        else:
+            return None
+
+    def start_record(self):
+        self.is_record = True
+        self.recordingThread = RecordingThread("Video Recording Thread", self.cap)
+        self.recordingThread.start()
+
+    def stop_record(self):
+        self.is_record = False
+
+        if self.recordingThread != None:
+            self.recordingThread.stop()
+
+            
     
 ############### VIDEO RECORDER ###################
 video_camera_record = None
 global_framex_c = None
 @app.route('/recordx')
-def index():
+def indexcam():
     return render_template('recordx.html')
 
 @app.route('/record_status', methods=['POST'])
 def record_status():
     global video_camera_record 
     if video_camera_record == None:
-        video_camera_record = camx2.VideoCamera()
+        video_camera_record = VideoCameraX()
 
     json = request.get_json()
 
@@ -368,12 +447,13 @@ def record_status():
     else:
         video_camera_record.stop_record()
         return jsonify(result="stopped")
+
 def video_stream():
     global video_camera_record 
     global global_framex_c
 
     if video_camera_record == None:
-        video_camera_record = camx2.VideoCamera()
+        video_camera_record = VideoCameraX()
         
     while True:
         frame = video_camera_record.get_frame()
@@ -398,4 +478,4 @@ if __name__ == '__main__':
     t.daemon = True
     t.start()
     app.secret_key='admin123'
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', debug=False, threaded=True)

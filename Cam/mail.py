@@ -50,5 +50,5 @@ def sendEmail(image):
     smtp = smtplib.SMTP('smtp.gmail.com', 587)
     smtp.starttls()
     smtp.login(fromEmail, fromEmailPassword)
-    smtp.sendmail(fromEmail, getTheEmail()[2], msgRoot.as_string())
+    smtp.sendmail(fromEmail, toEmail, msgRoot.as_string())
     smtp.quit()
