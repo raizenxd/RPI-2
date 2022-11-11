@@ -142,13 +142,15 @@ def check_for_objects():
                 last_sent = time.time()
                 # TO REMOVE
                 # get the session userID
-                SESSION_ID = session['userid']                 
-                sendEmail(frame, SESSION_ID)
+                # SESSION_ID = session['username']                 
+                sendEmail(frame)
                 print ("Email Sent...")
                 
         except:
             # TO REMOVE
+            
             print ("Error sending email: ", sys.exc_info()[0])
+            print ("Error sending email: ", sys.exc_info())
             # pass    
 # Deprecation For the meantime
 # @app.route('/')
@@ -348,7 +350,7 @@ def edit_settings():
     data=cur.fetchone()
     return render_template("edit_settings.html",datas=data)
 ########## CAMERAAAAA RECORDER ###################
-
+'''
 import threading
 
 class RecordingThread (threading.Thread):
@@ -487,7 +489,7 @@ def video_stream():
 def video_viewer():
     return Response(video_stream(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
+'''
 ############## MAIN #############################
 
 if __name__ == '__main__':

@@ -4,9 +4,8 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 import sqlite3
 # get the platform
-from sys import platform
+
 fromEmail = 'sekyuisme27@gmail.com'
-IN_WINDOWS = platform == "win32"
 fromEmailPassword = 'gwlstadxritinfiq'
 
 
@@ -16,7 +15,7 @@ def getEmailSave():
     return "dsds"
 
 def getTheEmail(username):
-    con = sqlite3.connect('database.db')
+    con = sqlite3.connect('db_web.db')
     cursor = con.cursor()
     print("Opened database successfully")
     select_query = "SELECT * FROM users WHERE username = ?"
@@ -26,7 +25,7 @@ def getTheEmail(username):
     return (records)
     cursor.close()
 
-def sendEmail(image, username):
+def sendEmail(image):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = 'Person Detected'
     msgRoot['From'] = fromEmail
@@ -35,8 +34,8 @@ def sendEmail(image, username):
     # #xtx = mail.getTheEmail()[1]
     # #print(xtx)
     # print("SDKSKDKSKDKSKD")
-    print(getTheEmail(username))
-    emailSend  = toEmail if IN_WINDOWS else getTheEmail(username)[3]
+    # print(getTheEmail(username))
+    emailSend  = toEmail # toEmail if IN_WINDOWS else getTheEmail(username)[3]
     print(emailSend)
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')
