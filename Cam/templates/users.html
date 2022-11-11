@@ -13,14 +13,18 @@
     </thead>
     <tbody>
       {% for row in datas %}
+        <!-- if username is not admin view the data-->
+        {% if row.username != 'admin' %}
         <tr>
-          <td>{{loop.index}}</td>
+          <td>{{row.UID}}</td>
           <td>{{row.username}}</td>
           <td>{{row.name}}</td>
           <td>{{row.email}}</td>
           <td><a href='{{url_for("edit_user",uid=row.UID)}}' class='btn btn-primary'>Edit</a></td>
           <td><a href='{{url_for("delete_user",uid=row.UID)}}' class='btn btn-danger' onclick='return confirm("Are You Sure")'>Delete</a></td>
         </tr>
+        {% endif %}
+       
       {%endfor%}
     </tbody>
   </table>

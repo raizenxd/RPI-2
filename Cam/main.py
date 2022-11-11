@@ -140,7 +140,10 @@ def check_for_objects():
             if found_obj and (time.time() - last_sent) > email_update_interval:
                 print("Sending...")
                 last_sent = time.time()
-                # TO REMOVE 
+                # TO REMOVE
+                # get the session userID
+
+                 
                 sendEmail(frame)
                 print ("Email Sent...")
                 
