@@ -1,16 +1,21 @@
 import cv2
-from imutils.video.pivideostream import PiVideoStream
-#from imutils.video.webcamvideostream import WebcamVideoStream
+from sys import platform
+if platform == 'win32':
+    from imutils.video.webcamvideostream import WebcamVideoStream
+else:    
+    from imutils.video.pivideostream import PiVideoStream
 import imutils
 import time
 import numpy as np
 
 class VideoCamera(object):
     def __init__(self):
-        self.vs = PiVideoStream().start()
-        #self.vs = WebcamVideoStream(src=0).start()
+        if platform == 'win32':
+            self.vs = WebcamVideoStream(src=0).start()
+        else:
+            self.vs = PiVideoStream().start()
+        
         time.sleep(2.0)
-
     def __del__(self):
         self.vs.stop()
 
