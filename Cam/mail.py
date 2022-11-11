@@ -18,12 +18,13 @@ def getTheEmail(username):
     con = sqlite3.connect('db_web.db')
     cursor = con.cursor()
     print("Opened database successfully")
-    select_query = "SELECT * FROM users WHERE username = ?"
+    select_query = "SELECT * FROM users WHERE uid = ?"
     cursor.execute(select_query, (username,))
     records = cursor.fetchone()
-    print(records)
+    print("Total rows are:  ", len(records))
+    print(records)    
     return (records)
-    cursor.close()
+    
 
 def sendEmail(image, username):
     msgRoot = MIMEMultipart('related')
@@ -35,7 +36,7 @@ def sendEmail(image, username):
     # #print(xtx)
     # print("SDKSKDKSKDKSKD")
     print(getTheEmail(username))
-    emailSend  = getTheEmail(username)[3] # toEmail
+    emailSend  = toEmail #getTheEmail(username)[3] # toEmail
     print(emailSend)
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')

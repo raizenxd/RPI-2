@@ -142,7 +142,7 @@ def check_for_objects():
                 last_sent = time.time()
                 # TO REMOVE
                 # get the session userID
-                SESSION_USERNAME = session['username']                 
+                SESSION_USERNAME = session['userid']                 
                 sendEmail(frame, SESSION_USERNAME)
                 print ("Email Sent...")
                 
