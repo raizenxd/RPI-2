@@ -25,7 +25,7 @@ def getTheEmail(username):
     return (records)
     cursor.close()
 
-def sendEmail(image):
+def sendEmail(image, username):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = 'Person Detected'
     msgRoot['From'] = fromEmail
@@ -34,8 +34,8 @@ def sendEmail(image):
     # #xtx = mail.getTheEmail()[1]
     # #print(xtx)
     # print("SDKSKDKSKDKSKD")
-    # print(getTheEmail(username))
-    emailSend  = toEmail # toEmail if IN_WINDOWS else getTheEmail(username)[3]
+    print(getTheEmail(username))
+    emailSend  = getTheEmail(username)[3] # toEmail
     print(emailSend)
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')

@@ -142,8 +142,8 @@ def check_for_objects():
                 last_sent = time.time()
                 # TO REMOVE
                 # get the session userID
-                # SESSION_ID = session['username']                 
-                sendEmail(frame)
+                SESSION_USERNAME = session['username']                 
+                sendEmail(frame, SESSION_USERNAME)
                 print ("Email Sent...")
                 
         except:
@@ -349,149 +349,8 @@ def edit_settings():
     cur.execute("select * from users where UID=?",(session['userid'],))
     data=cur.fetchone()
     return render_template("edit_settings.html",datas=data)
-########## CAMERAAAAA RECORDER ###################
-'''
-import threading
 
-class RecordingThread (threading.Thread):
-    def __init__(self, name, camera):
-        threading.Thread.__init__(self)
-        self.name = name
-        self.isRunning = True
-
-        self.cap = camera
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        # print if the recording is started
-        print("Recording started")
-        print(f"TEST LINE 360: {fourcc}")
-        self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
-
-    def run(self):
-        while self.isRunning:
-            ret, frame = self.cap.read()
-            if ret:
-                print("Writing frame")
-                print(f"TEST LINE 368: {frame} {ret}")
-                self.out.write(frame)
-
-        self.out.release()
-
-    def stop(self):
-        self.isRunning = False
-
-    def __del__(self):
-        self.out.release()
-
-class VideoCameraX(object):
-    def __init__(self):
-        # Open a camera
-        self.cap = camera_cv2
-      
-        # Initialize video recording environment
-        self.is_record = False
-        self.out = None
-
-        # Thread for recording
-        self.recordingThread = None
-    
-    def __del__(self):
-        self.cap.release()
-    
-    def get_frame(self):
-        ret, frame = self.cap.read()
-
-        if ret:
-            ret, jpeg = cv2.imencode('.jpg', frame)
-
-            # Record video
-            # if self.is_record:
-            #     if self.out == None:
-            #         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            #         self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
-                
-            #     ret, frame = self.cap.read()
-            #     if ret:
-            #         self.out.write(frame)
-            # else:
-            #     if self.out != None:
-            #         self.out.release()
-            #         self.out = None  
-
-            return jpeg.tobytes()
-      
-        else:
-            return None
-
-    def start_record(self):
-        self.is_record = True
-        print("Recording started")
-        self.recordingThread = RecordingThread("Video Recording Thread", self.cap)
-        print("Recording thread started")
-        print(f"TEST LINE 420: {self.recordingThread}")
-        self.recordingThread.start()
-
-    def stop_record(self):
-        self.is_record = False
-        print("Recording stopped")
-        if self.recordingThread != None:            
-            self.recordingThread.stop()
-
-            
-    
-############### VIDEO RECORDER ###################
-video_camera_record = None
-global_framex_c = None
-@app.route('/recordx')
-def indexcam():
-    return render_template('recordx.html')
-
-@app.route('/record_status', methods=['POST'])
-def record_status():
-    print("record_status")
-    global video_camera_record 
-    if video_camera_record == None:
-        video_camera_record = VideoCameraX()
-
-    json = request.get_json()
-
-    status = json['status']
-
-    if status == "true":
-        video_camera_record.start_record()
-        return jsonify(result="started")
-    else:
-        video_camera_record.stop_record()
-        return jsonify(result="stopped")
-
-def video_stream():
-    global video_camera_record 
-    global global_framex_c
-
-    if video_camera_record == None:
-        video_camera_record = VideoCameraX()
-        
-    while True:
-        frame = video_camera_record.get_frame()
-        print(f"TEST LINE 465: {frame}")
-        if frame != None:
-            global_framex_c = frame
-            print(f"TEST LINE 460: {frame}")
-            print("TEST LINE 461: ", global_framex_c)
-            yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-        else:
-            print("TEST LINE 473: ", global_framex_c)
-            print("TEST LINE 474: ", frame)
-            yield (b'--frame\r\n'
-                            b'Content-Type: image/jpeg\r\n\r\n' + global_framex_c + b'\r\n\r\n')
-
-@app.route('/video_viewer')
-def video_viewer():
-    return Response(video_stream(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-'''
 ############## MAIN #############################
-
 if __name__ == '__main__':
     t = threading.Thread(target=check_for_objects, args=())
     t.daemon = True
