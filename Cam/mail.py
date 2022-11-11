@@ -19,7 +19,7 @@ def getTheEmail(username):
     con = sqlite3.connect('database.db')
     cursor = con.cursor()
     print("Opened database successfully")
-    select_query = "SELECT * FROM usercon WHERE username = ?"
+    select_query = "SELECT * FROM users WHERE username = ?"
     cursor.execute(select_query, (username,))
     records = cursor.fetchone()
     print(records)
