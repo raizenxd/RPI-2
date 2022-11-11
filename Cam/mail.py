@@ -35,7 +35,9 @@ def sendEmail(image, username):
     # #xtx = mail.getTheEmail()[1]
     # #print(xtx)
     # print("SDKSKDKSKDKSKD")
+    print(getTheEmail(username))
     emailSend  = toEmail if IN_WINDOWS else getTheEmail(username)[3]
+    print(emailSend)
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
