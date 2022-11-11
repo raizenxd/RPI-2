@@ -71,7 +71,7 @@ def savedb():
          
          with sqlite3.connect("db_web.db") as con:
             cur = con.cursor()
-            cur.execute("UPDATE usercon SET name=?, email=? WHERE id=1",(name,email))            
+            cur.execute("UPDATE usercon SET name=?, email=? WHERE uid=1",(name,email))            
             con.commit()
             msg = "Record successfully added"
       except:
@@ -88,7 +88,7 @@ def getTheEmail():
     con = sqlite3.connect('db_web.db')
     cursor = con.cursor()
     print("Opened database successfully")
-    select_query = "SELECT * FROM usercon WHERE id=1"
+    select_query = "SELECT * FROM usercon WHERE uid=1"
     cursor.execute(select_query)
     records = cursor.fetchone()
     print(records)
@@ -140,11 +140,14 @@ def check_for_objects():
             if found_obj and (time.time() - last_sent) > email_update_interval:
                 print("Sending...")
                 last_sent = time.time()
+                # TO REMOVE 
                 sendEmail(frame)
                 print ("Email Sent...")
                 
         except:
+            # TO REMOVE
             print ("Error sending email: ", sys.exc_info()[0])
+            # pass    
 # Deprecation For the meantime
 # @app.route('/')
 # def index():
@@ -284,11 +287,11 @@ def edit_user(uid):
             # check if username is already in database
             cur.execute("select * from users where username=?",(username,))
             data=cur.fetchall()
-            if len(data) > 0:
+            if not(len(data) > 0):
                 flash('Username already in database','danger')
                 return redirect(url_for("users"))
             else:
-                cur.execute("update users set username=?,password=?,email=?,name=? where id=?",(username,password,email,name,uid))
+                cur.execute("update users set username=?,password=?,email=?,name=? where uid=?",(username,password,email,name,uid))
                 con.commit()
                 flash('User Updated','success')
                 return redirect(url_for("users"))
@@ -324,19 +327,18 @@ def edit_settings():
         name=request.form['name']
         con=sqlite3.connect("db_web.db")
         cur=con.cursor()
-        # get the user id from session
+        # get the userid from session
         
         # check if usrname is already in database
         cur.execute("select * from users where username=?",(username,))
         data=cur.fetchone()
-        if data is not None:
-            flash('Username already in database','warning')
+        if data is None:            
             return redirect(url_for("edit_settings"))
         cur.execute("update users set username=?,password=?,email=?,name=? where uid=?",(username,password,email,name,session['userid']))
 
         con.commit()
         flash('User Updated','success')
-        return redirect(url_for("users"))
+        return redirect(url_for("edit_settings"))
     con=sqlite3.connect("db_web.db")
     con.row_factory=sqlite3.Row
     cur=con.cursor()
