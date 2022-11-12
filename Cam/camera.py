@@ -1,16 +1,19 @@
 import cv2
-# from imutils.video.pivideostream import PiVideoStream
-from imutils.video.webcamvideostream import WebcamVideoStream
+# from sys import platform
+# from imutils.video.webcamvideostream import WebcamVideoStream
+from imutils.video.pivideostream import PiVideoStream
 import imutils
 import time
 import numpy as np
 
 class VideoCamera(object):
     def __init__(self):
-        # self.vs = PiVideoStream().start()
-        self.vs = WebcamVideoStream(src=0).start()
+        
+        # self.vs = WebcamVideoStream(src=0).start()
+        
+        self.vs = PiVideoStream().start()
+        
         time.sleep(2.0)
-
     def __del__(self):
         self.vs.stop()
 
@@ -34,12 +37,13 @@ class VideoCamera(object):
 
         if len(objects) > 0:
             found_objects = True
-
-        for (x, y, w, h) in objects:
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # OBJECT DETECTION
+        # for (x, y, w, h) in objects:
+        #    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         return (jpeg.tobytes(), found_objects)
+
 
 
 

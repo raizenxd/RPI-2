@@ -30,7 +30,7 @@
               <!-- Navbar brand: always visible -->
               <a class="is-flex has-items-center has-mr-6-tablet has-mr-auto-mobile has-size-2 has-text-current">
                   <i class="si-mug has-size-4 has-mr-2"></i>
-                  <strong>RPI</strong>
+                  <strong>Cypher</strong>
               </a>
               <!-- Toggler button: only visible in mobile screens -->
               <div id="navbar-toggler" class="menu  is-hidden-tablet"></div>
@@ -69,6 +69,14 @@
       </div>
      
    </div>
+
+    <h1>Streaming Video Recorder</h1>
+    <div id="recorder">
+    <button id="record">Record</button>
+    <button id="stop">Stop</button>
+    <a id="download"></a>
+    <script type="text/javascript" src="{{ url_for('static', filename='recorder.js') }}"></script>      
+    </div>
   
  
   </body>
