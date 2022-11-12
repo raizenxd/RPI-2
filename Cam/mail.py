@@ -42,7 +42,7 @@ def sendEmail(image, USERID):
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
     # get the day and time in format of Saturday - November 12, 2022 - 12:00:00 AM
-    day = datetime.datetime.now().strftime("%A - %B %d, %Y - %I:%M:%S %p")
+    day = datetime.now().strftime("%A - %B %d, %Y - %I:%M:%S %p")
     msgText = MIMEText(f'motion detected - Date: {day}')
     msgAlternative.attach(msgText)
 
