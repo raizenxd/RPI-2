@@ -34,7 +34,7 @@ neg=0
 face=0
 switch=1
 rec=0
-
+global sessionx
 def register_user_to_db(username, password):
     con = sqlite3.connect('db_web.db')
     cur = con.cursor()
@@ -133,13 +133,14 @@ def tasks():
         return render_template('index.html')
     return render_template('index.html')
 def check_for_objects():
-    global last_sent
+    global last_sent, sessionx
     while True:
         try:
             frame, found_obj = video_camera.get_object(object_classifier)
             if found_obj and (time.time() - last_sent) > email_update_interval:
                 print("Sending...")
                 last_sent = time.time()
+                print(sessionx)
                 # TO REMOVE
                 # get the session userID
                 # SESSION_ID = session['username']                 
@@ -181,6 +182,7 @@ def register():
 # login page
 @app.route('/login', methods=["POST", "GET"])
 def login():
+    global sessionx
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -190,6 +192,7 @@ def login():
             # session the userID
             session['userid'] = check_user(username, password)[1]
             session['username'] = username
+            sessionx = session['userid']
             # if username is admin add session admin
             if username == 'admin':
                 session['admin'] = True
