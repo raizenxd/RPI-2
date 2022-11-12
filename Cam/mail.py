@@ -1,3 +1,4 @@
+from datetime import datetime
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -40,7 +41,9 @@ def sendEmail(image):
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
-    msgText = MIMEText('motion detected')
+    # get the day and time in format of Saturday - November 12, 2022 - 12:00:00 AM
+    day = datetime.datetime.now().strftime("%A - %B %d, %Y - %I:%M:%S %p")
+    msgText = MIMEText(f'motion detected - Date: {day}')
     msgAlternative.attach(msgText)
 
     msgText = MIMEText('<img src="cid:image1">', 'html')
