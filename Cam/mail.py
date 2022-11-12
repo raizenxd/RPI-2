@@ -15,18 +15,18 @@ toEmail = 'raizensangalang.tech@gmail.com'
 def getEmailSave():
     return "dsds"
 
-def getTheEmail(username):
+def getTheEmail(USERID):
     con = sqlite3.connect('db_web.db')
     cursor = con.cursor()
     print("Opened database successfully")
-    select_query = "SELECT * FROM users WHERE username = ?"
-    cursor.execute(select_query, (username,))
+    select_query = "SELECT * FROM users WHERE uid = ?"
+    cursor.execute(select_query, (USERID,))
     records = cursor.fetchone()
     print(records)
     return (records)
     cursor.close()
 
-def sendEmail(image):
+def sendEmail(image, USERID):
     msgRoot = MIMEMultipart('related')
     msgRoot['Subject'] = 'Person Detected'
     msgRoot['From'] = fromEmail
@@ -36,7 +36,7 @@ def sendEmail(image):
     # #print(xtx)
     # print("SDKSKDKSKDKSKD")
     # print(getTheEmail(username))
-    emailSend  = toEmail # toEmail if IN_WINDOWS else getTheEmail(username)[3]
+    emailSend  =getTheEmail(USERID)[3]
     print(emailSend)
     msgRoot['To'] = emailSend
     msgAlternative = MIMEMultipart('alternative')

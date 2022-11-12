@@ -144,7 +144,7 @@ def check_for_objects():
                 # TO REMOVE
                 # get the session userID
                 # SESSION_ID = session['username']                 
-                sendEmail(frame)
+                sendEmail(frame, sessionx)
                 print ("Email Sent...")
                 
         except:
