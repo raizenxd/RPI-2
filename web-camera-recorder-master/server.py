@@ -8,7 +8,7 @@ global_framex_c = None
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('recordx.html')
 
 @app.route('/record_status', methods=['POST'])
 def record_status():

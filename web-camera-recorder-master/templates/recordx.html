@@ -1,16 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Streaming Video Recorder</title>
-</head>
-<body>
-  <h1>Streaming Video Recorder</h1>
-  <div id="recorder">
-    <button id="record">Record</button>
-    <button id="stop">Stop</button>
-    <a id="download"></a>
-    <script type="text/javascript" src="{{ url_for('static', filename='recorder.js') }}"></script>      
-  </div>
-  <img id="video" src="{{ url_for('video_viewer') }}">
-</body>
-</html>
+
+  <html>
+    <head>
+      <title>Raspberry Pi Surveillance Camera</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple/siimple.css" />
+      <meta name="example:title" content="Raspberry">
+      <meta name="example:description" content="RPI">
+      <meta name="example:type" content="sections">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
+      <link rel="stylesheet" href="">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
+      
+      <style>
+       .btn-danger{
+        background-color: #ff0000;
+        color: #fff;
+       }
+       *{
+        font-family: 'Roboto', sans-serif;
+       }
+      </style>
+    </head>
+    <body>
+      
+  
+        <!-- Dark navbar with action button on right -->
+        
+          
+            <div class="container has-pt-4 has-pb-4 has-pl-6 has-pr-6 is-flex has-items-center has-flex-wrap-mobile is-rounded">
+                <!-- Navbar brand: always visible -->
+                <a class="is-flex has-items-center has-mr-6-tablet has-mr-auto-mobile has-size-2 has-text-current">
+                    <i class="si-mug has-size-4 has-mr-2"></i>
+                    <strong>RPI</strong>
+                </a>
+                <!-- Toggler button: only visible in mobile screens -->
+                <div id="navbar-toggler" class="menu  is-hidden-tablet"></div>
+                <!-- Navigation menu: by default hidden on mobile screens -->
+                <div id="navbar-menu" class="is-flex-tablet has-justify-between has-w-full has-mt-4-mobile">
+                    <!-- Left side links -->
+                    <div class="is-flex-tablet">
+                        <!-- if admin show link-->
+                        <a class="navlink has-mb-2-mobile" href="{{url_for('index')}}">Home</a>
+                        {% if admin %}
+                        <a href="{{ url_for('index') }}" class="navlink has-mb-2-mobile">Add User</a>
+                        
+                        <!-- show all users in this link-->
+                        <a href="{{ url_for('index') }}" class="navlink has-mb-2-mobile">Users</a>
+                        {% endif %}
+                        <!-- go to edit settings and fetch userid-->
+                        <a href="{{ url_for('index') }}" class="navlink has-mb-2-mobile">Settings</a>
+                    </div>
+                    <!-- Right side conttent -->
+                    <div class="has-ml-auto-tablet has-mt-4-mobile">
+                        <a href="{{ url_for('index') }}" class="navlink has-mb-2-mobile">
+                          <i class="si-logout has-size-4 has-mr-2"></i>Logout</a>
+                    </div>
+                </div>
+            </div>
+      
+  
+  
+     <div class="container">
+        <!-- greet the user-->
+        <div class="greet-user">
+          <h1 class="has-text-centered">Hello {{ username }}!</h1>
+        </div>
+        <div>
+          <img id="bg" src="{{ url_for('video_viewer') }}" width="90%" height="20%">
+        </div>
+       <div>
+        <h1>Streaming Video Recorder</h1>
+      <div id="recorder">
+      <button class="button" id="record">Record</button>
+      <button class="button is-secondary" id="stop">Stop</button>
+      <a id="download"></a>
+      </div>
+     </div>
+  
+      
+      <script type="text/javascript" src="{{ url_for('static', filename='recorder.js') }}"></script>      
+      </div>
+    
+   
+    </body>
+  </html>
+  
