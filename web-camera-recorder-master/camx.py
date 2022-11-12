@@ -1,7 +1,7 @@
 import datetime
 import cv2
 import threading
-
+PATH = '/home/pi/Desktop/gdrive' 
 class RecordingThread (threading.Thread):
     def __init__(self, name, camera):
         threading.Thread.__init__(self)
@@ -12,7 +12,7 @@ class RecordingThread (threading.Thread):
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         # make file name with timestamp format like Nov-12-2018-11-12-00
         fileName = datetime.datetime.now().strftime("%b-%d-%Y-%H-%M-%S") + ".avi"
-        self.out = cv2.VideoWriter(f'./static/{fileName}',fourcc, 20.0, (640,480))
+        self.out = cv2.VideoWriter(f'{PATH}/{fileName}',fourcc, 20.0, (640,480))
 
     def run(self):
         while self.isRunning:
