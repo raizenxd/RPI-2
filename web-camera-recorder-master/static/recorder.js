@@ -2,16 +2,19 @@ var buttonRecord = document.getElementById("record");
 var buttonStop = document.getElementById("stop");
 
 buttonStop.disabled = true;
-
+// add class is-disabled to button
+buttonStop.classList.add("is-disabled");
 buttonRecord.onclick = function() {
     // var url = window.location.href + "record_status";
     buttonRecord.disabled = true;
+    // add class is-disabled to button
+    buttonRecord.classList.add("is-disabled");
     buttonStop.disabled = false;
+    // remove class is-disabled to button
+    buttonStop.classList.remove("is-disabled");
     
     // disable download link
-    var downloadLink = document.getElementById("download");
-    downloadLink.text = "";
-    downloadLink.href = "";
+  
 
     // XMLHttpRequest
     var xhr = new XMLHttpRequest();
@@ -27,7 +30,11 @@ buttonRecord.onclick = function() {
 
 buttonStop.onclick = function() {
     buttonRecord.disabled = false;
+    // remove class is-disabled to button
+    buttonRecord.classList.remove("is-disabled");
     buttonStop.disabled = true;    
+    // add class is-disabled to button
+    buttonStop.classList.add("is-disabled");
 
     // XMLHttpRequest
     var xhr = new XMLHttpRequest();
@@ -35,10 +42,7 @@ buttonStop.onclick = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // alert(xhr.responseText);
 
-            // enable download link
-            var downloadLink = document.getElementById("download");
-            downloadLink.text = "Download Video";
-            downloadLink.href = "/static/video.avi";
+          
         }
     }
     xhr.open("POST", "/record_status");

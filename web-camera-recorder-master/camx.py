@@ -1,3 +1,4 @@
+import datetime
 import cv2
 import threading
 
@@ -9,7 +10,9 @@ class RecordingThread (threading.Thread):
 
         self.cap = camera
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
+        # make file name with timestamp format like Nov-12-2018-11-12-00
+        fileName = datetime.datetime.now().strftime("%b-%d-%Y-%H-%M-%S") + ".avi"
+        self.out = cv2.VideoWriter(f'./static/{fileName}',fourcc, 20.0, (640,480))
 
     def run(self):
         while self.isRunning:
