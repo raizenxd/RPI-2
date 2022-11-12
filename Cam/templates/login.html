@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap">
-
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
         .is-warning {
             background-color: #ce4040;
@@ -17,12 +17,17 @@
             font-family: 'Roboto', sans-serif;
         }
     </style>
-    <title>Welcome to RPI</title>
+    <title>Welcome to Cypher App</title>
 </head>
 <body class="has-bg-light">
     <div class="container has-pt-16 has-pb-16">
+      
         <div class="has-w-96 has-pl-4 has-pr-4 has-ml-auto has-mr-auto">
             <div class="card is-shadowed">
+                <div class="lottie">
+                    <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_daupuwdu.json"  background="transparent"  speed="1"  style="width: 100px; height: 100px;"  loop  autoplay></lottie-player>
+                 
+                </div>
                 <h3>Sign in</h3>
                 <form action="/login" method="post">                   
                 <div class="has-mb-4">
