@@ -211,6 +211,8 @@ def login():
 
 @app.route('/home', methods=['POST', "GET"])
 def home():
+    global sessionx
+    sessionx = session['userid']
     if 'admin' in session:
        return render_template('index.html', admin=True)
     elif 'username' in session:
@@ -236,6 +238,8 @@ def gen(camera, camv2s):
 
 @app.route('/video_feed')
 def video_feed():
+    global sessionx
+    sessionx = session['userid']
     print("Starting")
     return Response(gen(video_camera, camera_cv2),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
