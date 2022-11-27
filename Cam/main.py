@@ -11,13 +11,11 @@ import datetime, time
 from threading import Thread
 from django.shortcuts import render
 from flask import Flask, redirect, url_for, render_template, request, session
-# import cam 
 
 email_update_interval = 50 
 video_camera = VideoCamera()
 camera_cv2 =  cv2.VideoCapture(0)
 object_classifier = cv2.CascadeClassifier("models/upperbody_recognition_model.xml")
-
 
 app = Flask(__name__)
 last_sent = 0
@@ -35,6 +33,7 @@ face=0
 switch=1
 rec=0
 global sessionx
+# register_user_to_db DEPRECATED
 def register_user_to_db(username, password):
     con = sqlite3.connect('db_web.db')
     cur = con.cursor()
@@ -42,15 +41,11 @@ def register_user_to_db(username, password):
     con.commit()
     con.close()
 
-
 def check_user(username, password):
     con = sqlite3.connect('db_web.db')
-    cur = con.cursor()
-    
+    cur = con.cursor()    
     cur.execute('Select username,password, uid FROM users WHERE username=? and password=?', (username, password))
-
-    result = cur.fetchone()
-    
+    result = cur.fetchone()    
     if result:        
         return (True,result[2])
     else:
@@ -100,7 +95,7 @@ def record(out):
     while(rec):
         time.sleep(0.05)
         out.write(rec_frame)
-
+# def tasks() DEPRECATED to use and to be removed
 @app.route('/requests',methods=['POST','GET'])
 def tasks():
     global switch,camera
@@ -132,42 +127,41 @@ def tasks():
     elif request.method=='GET':
         return render_template('index.html')
     return render_template('index.html')
+
 def check_for_objects():
     global last_sent, sessionx
     while True:
         try:
+            # Read the current frame from the video stream
+            # and convert it to grayscale
+            # (since our haar cascade classifier requires grayscale images)        
             frame, found_obj = video_camera.get_object(object_classifier)
+            # Check if an object has been detected
+            # if object has been detected, send an email
+            # sessionx is the session id of the user
             if found_obj and (time.time() - last_sent) > email_update_interval:
                 print("Sending...")
                 last_sent = time.time()
-                print(sessionx)
-                # TO REMOVE
-                # get the session userID
-                # SESSION_ID = session['username']                 
+                print(sessionx)                               
                 sendEmail(frame, sessionx)
                 print ("Email Sent...")
                 
-        except:
-            # TO REMOVE
-            
+        except:           
             print ("Error sending email: ", sys.exc_info()[0])
             print ("Error sending email: ", sys.exc_info())
             # pass    
-# Deprecation For the meantime
-# @app.route('/')
-# def index():
-#     email = getTheEmail()[2]
-#     name = getTheEmail()[1]
-#     return render_template('index.html', emailsend=email, name=name)
+
 
 # initial page
 @app.route("/")
 def index():
+    # if it is in session, redirect to home page
+    # else redirect to login page    
     if 'username' in session:
         return redirect(url_for('home'))
     return render_template('login.html')
 
-# register page
+# DEPRECATED
 @app.route('/register', methods=["POST", "GET"])
 def register():
     if request.method == 'POST':
@@ -180,6 +174,7 @@ def register():
     else:
         return render_template('register.html')
 # login page
+
 @app.route('/login', methods=["POST", "GET"])
 def login():
     global sessionx
@@ -187,9 +182,13 @@ def login():
         username = request.form['username']
         password = request.form['password']
         print(check_user(username, password))
-        
+        # check if the user is in the database
+        # the reason why it has [0] is because the check_user returns a tuple and the first element is the boolean
+        # if the user is in the database, redirect to home page        
         if check_user(username, password)[0]:
             # session the userID
+            # sessionx is the session id of the user
+            # the reason why it has [1] is because the check_user returns a tuple and the second element is the userID
             session['userid'] = check_user(username, password)[1]
             session['username'] = username
             sessionx = session['userid']
@@ -214,18 +213,24 @@ def home():
     global sessionx
     sessionx = session['userid']
     if 'admin' in session:
+        # if admin is in session, redirect to admin page
        return render_template('index.html', admin=True)
     elif 'username' in session:
+        # if the user is in the database, redirect to home page
         return render_template('index.html', admin=False, username=session['username'], userid=session['userid'])
     else:
+        # if user is not logged in, redirect to login page
         return render_template('login.html', msg=True) 
 
 
 @app.route('/logout')
 def logout():
+    # session.clear() is used to clear all the session
     session.clear()
+    # after clearing the session, redirect to login page
     return redirect(url_for('index'))
 
+# this is function to generate the video feed
 def gen(camera, camv2s):
     global rec_frame
     while True:
@@ -235,7 +240,7 @@ def gen(camera, camv2s):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-
+# this is function view to display the video feed
 @app.route('/video_feed')
 def video_feed():
     global sessionx
@@ -244,19 +249,23 @@ def video_feed():
     return Response(gen(video_camera, camera_cv2),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
+# this route is to show all the users in the database
 @app.route("/users")
 def users():
+    # it should be admin to access this page
     if 'admin' in session:
-        con=sqlite3.connect("db_web.db")
+        # get all the users in the database
+        con=sqlite3.connect("db_web.db")        
         con.row_factory=sqlite3.Row
         cur=con.cursor()
         cur.execute("select * from users")
+        # after fetching using fetchall(), it will return a list of tuples
         data=cur.fetchall()
+        # pass the list of tuples to the users.html
         return render_template("users.html",datas=data)
     else:
         return redirect(url_for('index'))
-
+# this route is to add new user
 @app.route("/add_user",methods=['POST','GET'])
 def add_user():
     if 'admin' in session:
@@ -285,6 +294,7 @@ def add_user():
     else:
         return redirect(url_for('index'))
 
+# this route is to edit the user along with the user id
 @app.route("/edit_user/<string:uid>",methods=['POST','GET'])
 def edit_user(uid):
     if 'admin' in session:
@@ -316,7 +326,7 @@ def edit_user(uid):
     else:
         return redirect(url_for('index'))
 
-    
+# this route is to delete the user along with the user id    
 @app.route("/delete_user/<string:uid>",methods=['GET'])
 def delete_user(uid):
     if 'admin' in session:
@@ -329,6 +339,8 @@ def delete_user(uid):
     else:
         return redirect(url_for('index'))
 
+# this route can access by everyone
+# this route is use to edit the profile or settings
 @app.route("/edit_settings",methods=['POST','GET'])
 def edit_settings():    
     if request.method=='POST':
@@ -338,8 +350,7 @@ def edit_settings():
         name=request.form['name']
         con=sqlite3.connect("db_web.db")
         cur=con.cursor()
-        # get the userid from session
-        
+        # get the userid from session        
         # check if usrname is already in database
         cur.execute("select * from users where username=?",(username,))
         data=cur.fetchone()
@@ -356,147 +367,7 @@ def edit_settings():
     cur.execute("select * from users where UID=?",(session['userid'],))
     data=cur.fetchone()
     return render_template("edit_settings.html",datas=data)
-########## CAMERAAAAA RECORDER ###################
-'''
-import threading
 
-class RecordingThread (threading.Thread):
-    def __init__(self, name, camera):
-        threading.Thread.__init__(self)
-        self.name = name
-        self.isRunning = True
-
-        self.cap = camera
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        # print if the recording is started
-        print("Recording started")
-        print(f"TEST LINE 360: {fourcc}")
-        self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
-
-    def run(self):
-        while self.isRunning:
-            ret, frame = self.cap.read()
-            if ret:
-                print("Writing frame")
-                print(f"TEST LINE 368: {frame} {ret}")
-                self.out.write(frame)
-
-        self.out.release()
-
-    def stop(self):
-        self.isRunning = False
-
-    def __del__(self):
-        self.out.release()
-
-class VideoCameraX(object):
-    def __init__(self):
-        # Open a camera
-        self.cap = camera_cv2
-      
-        # Initialize video recording environment
-        self.is_record = False
-        self.out = None
-
-        # Thread for recording
-        self.recordingThread = None
-    
-    def __del__(self):
-        self.cap.release()
-    
-    def get_frame(self):
-        ret, frame = self.cap.read()
-
-        if ret:
-            ret, jpeg = cv2.imencode('.jpg', frame)
-
-            # Record video
-            # if self.is_record:
-            #     if self.out == None:
-            #         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-            #         self.out = cv2.VideoWriter('./static/video.avi',fourcc, 20.0, (640,480))
-                
-            #     ret, frame = self.cap.read()
-            #     if ret:
-            #         self.out.write(frame)
-            # else:
-            #     if self.out != None:
-            #         self.out.release()
-            #         self.out = None  
-
-            return jpeg.tobytes()
-      
-        else:
-            return None
-
-    def start_record(self):
-        self.is_record = True
-        print("Recording started")
-        self.recordingThread = RecordingThread("Video Recording Thread", self.cap)
-        print("Recording thread started")
-        print(f"TEST LINE 420: {self.recordingThread}")
-        self.recordingThread.start()
-
-    def stop_record(self):
-        self.is_record = False
-        print("Recording stopped")
-        if self.recordingThread != None:            
-            self.recordingThread.stop()
-
-            
-    
-############### VIDEO RECORDER ###################
-video_camera_record = None
-global_framex_c = None
-@app.route('/recordx')
-def indexcam():
-    return render_template('recordx.html')
-
-@app.route('/record_status', methods=['POST'])
-def record_status():
-    print("record_status")
-    global video_camera_record 
-    if video_camera_record == None:
-        video_camera_record = VideoCameraX()
-
-    json = request.get_json()
-
-    status = json['status']
-
-    if status == "true":
-        video_camera_record.start_record()
-        return jsonify(result="started")
-    else:
-        video_camera_record.stop_record()
-        return jsonify(result="stopped")
-
-def video_stream():
-    global video_camera_record 
-    global global_framex_c
-
-    if video_camera_record == None:
-        video_camera_record = VideoCameraX()
-        
-    while True:
-        frame = video_camera_record.get_frame()
-        print(f"TEST LINE 465: {frame}")
-        if frame != None:
-            global_framex_c = frame
-            print(f"TEST LINE 460: {frame}")
-            print("TEST LINE 461: ", global_framex_c)
-            yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-        else:
-            print("TEST LINE 473: ", global_framex_c)
-            print("TEST LINE 474: ", frame)
-            yield (b'--frame\r\n'
-                            b'Content-Type: image/jpeg\r\n\r\n' + global_framex_c + b'\r\n\r\n')
-
-@app.route('/video_viewer')
-def video_viewer():
-    return Response(video_stream(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-'''
 ############## MAIN #############################
 
 if __name__ == '__main__':
